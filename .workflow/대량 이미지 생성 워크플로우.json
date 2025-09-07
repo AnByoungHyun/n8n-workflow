@@ -1,0 +1,258 @@
+{
+  "name": "대량 이미지 생성 워크플로우",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"promptText\": \"{{ $json.BasePrompt }}\",\n  \"variation: {\n    \"color\": \"{{ $json.Variations_Color }}\",\n    \"bgColor\": \"{{ $json.Variations_Background }}\"\n  },\n  \"negativePrompt\": \"{{ $json.NegativePrompt }}\",\n  \"campaignSeed\": 123456,\n  \"imageQuality\": \"premium\",\n  \"imageWidth\": 1024,\n  \"imageHeight\": 1024\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        -48
+      ],
+      "id": "efa42425-5731-453a-af4b-237ba261a417",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "images[0]",
+        "options": {
+          "fileName": "={{ $('Extract from File').item.json.ProductName }}-{{ $runIndex }}.png",
+          "mimeType": "image/png"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        -48
+      ],
+      "id": "0bed3f10-3217-44a1-8a14-0cbbac11edbf",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.titan-image-generator-v2:0/invoke",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "content_type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"taskType\": \"TEXT_IMAGE\",\n  \"textToImageParams\": {\n    \"text\": \"{{ $json.promptText }}, color: {{ $json.variation.color }}, background color: {{ $json.variation.bgColor }}\",\n    \"negativeText\": \"{{ $json.negativePrompt }}\"\n  },\n  \"imageGenerationConfig\": {\n    \"numberOfImages\": 1,\n    \"quality\": \"{{ $json.imageQuality }}\",\n    \"width\": {{ $json.imageWidth }},\n    \"height\": {{ $json.imageHeight }},\n    \"cfgScale\": 8.0,\n    \"seed\": {{ $json.campaignSeed }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        96,
+        -48
+      ],
+      "id": "7445e2d8-1ca2-4dae-9abb-8708fc248393",
+      "name": "Bedrock Image Generator AI",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "GAUlXMk3Eeuh2Yz1",
+          "name": "Bedrock API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/home/node/temp/{{ $binary.data.fileName }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -48
+      ],
+      "id": "fadfbabf-a558-42bf-a8d8-1779c10ea96b",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true,
+          "allowedFilesMimeTypes": "application/xlsx"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -992,
+        -48
+      ],
+      "id": "f932b437-cb96-4829-9b28-929d88ccb4dd",
+      "name": "When chat message received",
+      "webhookId": "ad20bca9-c3ed-4018-a7f1-61480f2a59c2"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "data0",
+        "options": {
+          "delimiter": ",",
+          "encoding": "utf-8",
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        -48
+      ],
+      "id": "7986af88-59a5-46e1-b4d7-250820fe5a4d",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -480,
+        -48
+      ],
+      "id": "4bd139c6-f2af-4dd3-88bd-0f9b54b3e964",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        -48
+      ],
+      "id": "cefc61c1-d217-41b8-915e-c99188b962fc",
+      "name": "Wait",
+      "webhookId": "0e91e88d-7453-4a38-9e3a-4413efbf58da"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Bedrock Image Generator AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bedrock Image Generator AI": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1215e72f-10aa-4798-9427-f6c207bc1b0c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48ffb208fd4d58e0c69e277bcea416f40eb58d8d44cb3f6eca1ded9becce184e"
+  },
+  "id": "1XfitA3xaDsLlC2l",
+  "tags": []
+}

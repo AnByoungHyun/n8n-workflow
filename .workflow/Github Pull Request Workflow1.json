@@ -1,0 +1,447 @@
+{
+  "name": "Github Pull Request Workflow1",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "events": [
+          "pull_request"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        16
+      ],
+      "id": "51903bdb-4b26-40e8-933c-d81a54f8b4e8",
+      "name": "Github Trigger",
+      "webhookId": "2b200e58-40d1-40c6-a67e-b8238507e193",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "df002d2d-d5ee-4ea3-bcac-b6a64b23b4d2",
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "opened",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "0f26682f-778e-4b21-9d79-887e59e58586",
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "reopened",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        16
+      ],
+      "id": "8be84939-f7b7-4e7d-a8ce-039d45c71cbc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "list",
+          "cachedResultName": "AnByoungHyun",
+          "cachedResultUrl": "https://github.com/AnByoungHyun"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "issueNumber": "={{ $json.body.number }}",
+        "editFields": {
+          "assignees": [
+            {
+              "assignee": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('assignees0_Assignees', ``, 'string') }}"
+            }
+          ],
+          "labels": [
+            {
+              "label": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('labels0_Label', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        144
+      ],
+      "id": "32befe05-8d8c-467f-a6f0-5fab7445ffe3",
+      "name": "Edit assignees and Lables",
+      "webhookId": "bb27a442-371d-4008-b408-8038a227545b",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "list",
+          "cachedResultName": "AnByoungHyun",
+          "cachedResultUrl": "https://github.com/AnByoungHyun"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "issueNumber": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Number', ``, 'number') }}",
+        "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Body', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        144
+      ],
+      "id": "32e53f46-c44a-4d61-b9bb-d53b12d3e783",
+      "name": "Add comment to Pull Request",
+      "webhookId": "4c1314b9-8231-4709-aa99-aa35fd3e2f15",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "이 Tool의 목표는 GitHub Pull Request(PR)에 코드 리뷰어를 할당하는 것입니다.\nBody 에 JSON 형식으로 리뷰어를 작성하여야 합니다.\n예시: { \"reviewers\": [\"user1\", \"user2\"] }",
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{ $('Github Trigger').item.json.body.repository.owner.login }}/{{ $('Github Trigger').item.json.body.repository.name }}/pulls/{{ $('Github Trigger').item.json.body.number }}/requested_reviewers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', ``, 'json') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        144
+      ],
+      "id": "371b5a61-2a81-4640-9588-d51ac8775f30",
+      "name": "Add reviewers",
+      "executeOnce": true,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "f0sm0cFb6Squs2Za",
+          "name": "Github Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=제공되는 URL 주소를 \"GET Code Diff\" Tool을 사용하여 필요한 정보를 수집합니다.\n수집된 정보를 통해 코드 리뷰를 진행하세요.\n\nURL: {{ $('Github Trigger').item.json.body.pull_request.diff_url }}",
+        "options": {
+          "systemMessage": "# 역할\n당신은 PyLint-GPT라는 이름의 매우 엄격한 파이썬 코드 스타일 자동 검사기(Linter)입니다. 당신의 유일한 임무는 입력된 파이썬 코드를 PEP 8 스타일 가이드와 일반적인 파이썬 표준 컨벤션에 따라 분석하는 것입니다. 코드의 실행 로직이나 성능에 대한 주관적인 평가는 절대 하지 않으며, 오직 정해진 스타일 규칙 위반 여부만 기계적으로 찾아내야 합니다.\n\n# 체크리스트\n아래의 항목들을 중점적으로, 그리고 매우 엄격하게 검사해 주세요:\n\n## 네이밍 컨벤션 (Naming Conventions):\n  - 함수, 변수, 인스턴스: snake_case (예: my_variable)\n  - 클래스: PascalCase (예: MyClass)\n  - 상수: ALL_CAPS (예: MAX_SIZE)\n\n## 라인 길이 (Line Length):\n한 줄의 코드는 79자를 넘지 않는 것을 원칙으로 하며, 최대 99자를 넘지 않는지 확인합니다. 긴 라인은 적절하게 줄바꿈이 되었는지 확인합니다.\n\n## 임포트 (Imports):\n  - import 문은 파일의 최상단에 위치해야 합니다.\n  - 임포트 순서 (표준 라이브러리 -> 서드파티 라이브러리 -> 로컬 애플리케이션)가 권장사항에 맞는지 확인합니다.\n  - 한 줄에 하나의 모듈만 임포트하는지 확인합니다. (나쁜 예: import sys, os)\n\n## 공백 (Whitespace):\n  - 연산자(,, +, =) 주위에 적절한 공백이 있는지 확인합니다.\n  - 함수와 클래스 정의 사이에는 두 줄의 공백이 있는지 확인합니다.\n  - 메서드 정의 사이에는 한 줄의 공백이 있는지 확인합니다.\n\n## 주석 및 독스트링 (Comments & Docstrings):\n  - 모든 공개(public) 모듈, 함수, 클래스, 메서드에 PEP 257 스타일의 독스트링(docstring)이 존재하는지 확인합니다.\n  - 주석이 코드와 같은 줄에 있다면, 코드 뒤에 최소 두 칸의 공백이 있는지 확인합니다.\n\n## 파이써닉(Pythonic) 코드 제안:\n  - C 스타일의 for 루프 대신 리스트 컴프리헨션(list comprehension)이나 enumerate 사용을 제안합니다.\n  - 불필요하게 복잡한 코드 구조를 더 간결하고 파이썬다운 방식으로 개선할 수 있는지 확인합니다.\n\n# 결과물 출력 형식\n분석 결과를 아래의 형식에 맞춰 표(Table) 형태로 간결하게 제시해 주세요.\n\n## 1단계: 종합 평가\n한 문장으로 코드의 스타일 가이드 준수 여부를 요약합니다. (예: \"총 5개의 PEP 8 위반 사항이 발견되었습니다.\")\n만약 위반 사항이 없다면, \"코드 스타일이 PEP 8 표준을 완벽하게 준수합니다.\"라고 출력하고 분석을 종료합니다.\n\n## 2단계: 상세 지적 사항 (표)\n| 줄 번호 | 위반 내용 | 기존 코드 | 추천 코드 |\n| :--- | :--- | :--- | :--- |\n| (숫자) | (예: 변수명이 snake_case가 아님) | myVariable = 10 | my_variable = 10 |\n| (숫자) | (예: 연산자 주위 공백 부족) | a=a+1 | a = a + 1 |\n\n# Tool 사용\n- 리뷰 작성은 \"Create a review in Github\" Tool 을 사용하세요."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "58aa061f-fe33-4dd8-b165-b797bacb169b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        688,
+        128
+      ],
+      "id": "5ad5c890-9dc2-4919-8769-164402064e74",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ih0gZ127MpP7A6I9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "review",
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "list",
+          "cachedResultName": "AnByoungHyun",
+          "cachedResultUrl": "https://github.com/AnByoungHyun"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "pullRequestNumber": "={{ $('Github Trigger').item.json.body.number }}",
+        "event": "comment",
+        "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Body', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        1008,
+        128
+      ],
+      "id": "b7fde3a3-0ba3-45b6-aedc-81955c295b67",
+      "name": "Create a review in GitHub",
+      "webhookId": "ff3c54dd-1869-4bc9-b4c6-bd22e2fbf864",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "코드 리뷰를 하기 위한 diff를 요청 합니다.",
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        128
+      ],
+      "id": "e6c20b0b-cb10-4a43-a367-ccd545271e13",
+      "name": "GET Code Diff"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "# 역할\n당신은 개발팀의 GitHub Pull Request(PR) 분석 전문가입니다. 당신의 임무는 PR의 제목과 본문을 분석하여, 주어진 규칙에 따라 가장 적합한 '라벨'과 '담당자', '리뷰어' 를 결정하고 **반드시 제공된 Tool을 사용하여** GitHub에 변경사항을 적용하는 것입니다.\n\n# 작업 절차\n1. 주어진 Pull Request의 제목과 본문 내용을 주의 깊게 분석하여 핵심 내용을 파악합니다.\n2. 아래 '라벨 분류 규칙' 과 '담당자 할당 규칙', '리뷰어 할당 규칙' 을 참고하여 가장 적합한 라벨(들)과 담당자를 결정합니다.\n3. **`Edit_assignees_and_Lables` Tool을 사용하여** 결정된 담당자와 라벨을 Pull Request에 적용하세요.\n4. **`Add_reviewers` Tool을 사용하여** 결정된 리뷰어를 Pull Request에 적용하세요.\n5. **`Add_comment_to_Pull_Request` Tool을 사용하여** 어떤 라벨과 담당자 그리고 리뷰어를 할당했는지, 그리고 그 이유는 무엇인지 요약하여 코멘트를 남기세요. 코멘트 마지막에는 AI를 통해 자동 분류되었음을 명시해야 합니다.\n\n# 라벨 분류 규칙\n- bug: 소프트웨어의 오류, 크래시, 오작동 수정. (키워드 예시: \"fix\", \"error\", \"failed\", \"broken\", \"resolve issue\")\n- enhancement: 기존 기능 개선 또는 새로운 기능 추가. (키워드 예시: \"add\", \"implement\", \"support\", \"improve\", \"refactor\")\n- documentation: 문서(README, 주석 등)의 수정 또는 추가. (키워드 예시: \"docs\", \"readme\", \"example\", \"update comments\")\n- question: 기능이나 사용법에 대한 질문. (키워드 예시: \"how to\", \"is it possible\", \"question\")\n\n# 담당자 할당 규칙(우선순위 순서대로 적용)\n1. PR에 bug 라벨이 포함될 경우: AnByoungHyun 에게 할당합니다.\n2. PR에 enhancement 또는 question 라벨이 포함될 경우: kimsinok0714 에게 할당합니다.\n3. PR에 documentation 라벨만 단독으로 포함될 경우: hyuni86 에게 할당합니다.\n4. 위 규칙에 해당하지 않거나 판단이 모호할 경우: AnByoungHyun 에게 할당합니다.\n\n# 리뷰어 선정 규칙(우선순위 순서대로 적용)\n1. bug 라벨이 포함될 경우: kimsinok0714 를 리뷰어로 추가한다.\n2. enhancement 또는 question 라벨이 포함될 경우: kimsinok0714 를 리뷰어로 추가한다.\n3. documentation 라벨만 단독으로 존재할 경우: hyuni86 을 리뷰어로 추가한다.\n4. Pull Request 요청자는 리뷰어로 선정하지 않는다.\n5. 위 규칙(1-4번)에 따라 추가된 리뷰어가 아무도 없을 경우: 기본 리뷰어로 kimsinok0714를 추가한다.\n\n# Tool 사용 시 참고사항\n- Tool을 호출할 때는 필요한 모든 파라미터(예: 담당자 이름, 라벨 목록, 리뷰어 목록, 코멘트 내용)를 정확하게 전달해야 합니다.\n- 반드시 `Edit_assignees_and_Lables`를 먼저 실행한 후, `Add_reviewers` 실행 하고 마지막으로 `Add_comment_to_Pull_Request`를 실행하세요.",
+              "role": "system"
+            },
+            {
+              "content": "=아래 Pull Request 를 분석하고 JSON 형식으로 응답해주세요.\n\n## 분석할 Pull Request\n제목: {{ $json.body.pull_request.title }}\n본문: {{ $json.body.pull_request.body }}\n요청자: {{ $json.body.sender.login }}\n요청번호: {{ $json.body.pull_request.number }}\n상태: {{ $json.body.action }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -32,
+        -80
+      ],
+      "id": "c65e4d15-211c-41ed-a9ce-c93206a88378",
+      "name": "Auto assign and label github pull request",
+      "credentials": {
+        "openAiApi": {
+          "id": "ih0gZ127MpP7A6I9",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Github Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Auto assign and label github pull request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit assignees and Lables": {
+      "ai_tool": [
+        [
+          {
+            "node": "Auto assign and label github pull request",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add comment to Pull Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "Auto assign and label github pull request",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add reviewers": {
+      "ai_tool": [
+        [
+          {
+            "node": "Auto assign and label github pull request",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a review in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Code Diff": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto assign and label github pull request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8eedb319-7fa0-4b8d-a153-333b983c488c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48ffb208fd4d58e0c69e277bcea416f40eb58d8d44cb3f6eca1ded9becce184e"
+  },
+  "id": "N1qFRDdIdZhtdNaR",
+  "tags": []
+}

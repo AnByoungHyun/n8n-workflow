@@ -1,0 +1,1902 @@
+{
+  "name": "Github Pull Request Workflow2",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "events": [
+          "pull_request"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        256
+      ],
+      "id": "a9e82c6a-a794-45bf-a361-a649262f2dfc",
+      "name": "Github Trigger",
+      "webhookId": "2b200e58-40d1-40c6-a67e-b8238507e193",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "df002d2d-d5ee-4ea3-bcac-b6a64b23b4d2",
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "opened",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "0f26682f-778e-4b21-9d79-887e59e58586",
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "reopened",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -352,
+        256
+      ],
+      "id": "24f77ba6-40f8-4f70-b2be-5d11b152070c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "list",
+          "cachedResultName": "AnByoungHyun",
+          "cachedResultUrl": "https://github.com/AnByoungHyun"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "issueNumber": "={{ $json.body.number }}",
+        "editFields": {
+          "assignees": [
+            {
+              "assignee": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('assignees0_Assignees', `풀 리퀘스트를 담당할 담당자 목록을 가지는 \"문자열 배열\"`, 'string') }}"
+            }
+          ],
+          "labels": [
+            {
+              "label": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('labels0_Label', `풀 리퀘스트 라벨 목록을 위한 \"문자열 배열\"`, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        -32,
+        384
+      ],
+      "id": "2c3defa6-2bb1-4989-8477-fec69aedb571",
+      "name": "Edit assignees and Lables",
+      "webhookId": "bb27a442-371d-4008-b408-8038a227545b",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "list",
+          "cachedResultName": "AnByoungHyun",
+          "cachedResultUrl": "https://github.com/AnByoungHyun"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "issueNumber": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Number', `코멘트 작성을 위한 풀 리퀘스트 번호`, 'number') }}",
+        "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Body', `코멘트를 작성하는 문자열`, 'string') }}"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        384
+      ],
+      "id": "1f148dd6-53f4-4027-8c1e-8e15e145ec56",
+      "name": "Add comment to Pull Request",
+      "webhookId": "4c1314b9-8231-4709-aa99-aa35fd3e2f15",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{ $('Github Trigger').item.json.body.repository.owner.login }}/{{ $('Github Trigger').item.json.body.repository.name }}/pulls/{{ $('Github Trigger').item.json.body.number }}/requested_reviewers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', ``, 'json') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        384
+      ],
+      "id": "dcbba286-e9b2-4a96-83cf-c12f8fab736d",
+      "name": "Add reviewers",
+      "executeOnce": true,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "f0sm0cFb6Squs2Za",
+          "name": "Github Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        800
+      ],
+      "id": "7411b9bc-bc74-4064-a3ff-2bd39b1c9213",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ih0gZ127MpP7A6I9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "review",
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "list",
+          "cachedResultName": "AnByoungHyun",
+          "cachedResultUrl": "https://github.com/AnByoungHyun"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "pullRequestNumber": "={{ $json.body.json.body.pull_request.number }}",
+        "event": "comment",
+        "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Body', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        800
+      ],
+      "id": "1197caf1-9347-46c7-aa98-011f2bbbfabf",
+      "name": "Create a review in GitHub",
+      "webhookId": "ff3c54dd-1869-4bc9-b4c6-bd22e2fbf864",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "코드 리뷰를 하기 위한 diff를 요청 합니다.",
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        800
+      ],
+      "id": "f407fa7f-968f-4808-b155-cfbc76e88374",
+      "name": "GET Code Diff"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "# Role & Goal\n너는 우리 개발팀의 코드 리뷰 할당을 자동화하는 AI 어시스턴트다. 너의 목표는 주어진 코드 변경 내역을 분석하여, 아래에 정의된 '리뷰어 명단과 전문 분야' 및 '리뷰어 할당 규칙'에 따라 가장 적합한 리뷰어 GitHub ID를 결정하는 것이다. 단, pull request 요청자는 리뷰어로 등록할 수 없다.\n\n# Reviewer Roster & Specializations\n- GitHub ID: AnByoungHyun\n  - 담당: Review AI\n  - 잔문 기술/키워드: 모든 Pull Request 에 참여하여 리뷰를 수행하는 봇 역할을 수행합니다.\n\n- GitHub ID: kimsinok0714\n  - 담당: 백엔드&프론트엔드\n  - 전문 기술/키워드: Python, Django, FastAPI, SQL, api/, models/, services/\n\n- GitHub ID: hyuni86\n  - 담당: 테스터\n  - 전문 기술/키워드: UI/UX, API, 성능 및 벤치마크\n\n\n# Assignment Rules\n1. 변경된 파일의 경로와 확장자를 보고, '리뷰어 명단과 전문 분야' 섹션의 '전문 기술/키워드'와 가장 일치하는 리뷰어를 선택한다.\n2. 만약 프론트엔드와 백엔드 코드가 모두 변경되었다면, 백엔드 담당자와 프론트엔드 담당자 모두를 리뷰어로 지정한다.\n3. 만약 적합한 담당자가 없거나 판단이 어려울 경우, 기본 리뷰어로 kimsinok0714 를 지정한다.\n\n\n# Tool 사용\n- Add reviewers 를 사용하여 리뷰어를 등록하며, 리뷰어는 1명 이상일 수 있습니다.\n- HTTP Request 툴을 사용하여 직접 JSON 형식의 Body 를 전달합니다.\n- 다른 설명이나 문장을 절대 추가하지 마라.\n\n# HTTP Request Body 형식\n``` JSON\n{\n  \"reviewers\": 리스트로 리뷰어가 등록되어야 합니다.\n}\n```\n",
+              "role": "system"
+            },
+            {
+              "content": "=아래 Pull Request 를 분석하고 적합한 리뷰어를 선정하세요.\n\n## 분석할 Pull Request\n제목: {{ $('Github Trigger').item.json.body.pull_request.title }}\n본문: {{ $('Github Trigger').item.json.body.pull_request.body }}\n요청자: {{ $('Github Trigger').item.json.body.sender.login }}\n요청번호: {{ $('Github Trigger').item.json.body.pull_request.number }}\n상태: {{ $('Github Trigger').item.json.body.action }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        256,
+        160
+      ],
+      "id": "d666e15b-48f8-4712-8986-40e17758a1c4",
+      "name": "Auto reviewer github pull request",
+      "credentials": {
+        "openAiApi": {
+          "id": "ih0gZ127MpP7A6I9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "# Role & Gole\n당신은 GitHub Pull Request(PR)를 분석하여 자동으로 라벨과 담당자를 할당하는 AI 어시스턴트입니다. 주어진 PR의 제목과 본문을 분석하여, 정의된 규칙에 따라 가장 적합한 라벨과 담당자를 GitHub에 설정하고, 실행 결과를 코멘트로 남기는 것을 목표로 합니다.\n\n\n# Workflow\n1.  **PR 내용 분석**: 주어진 Pull Request의 제목과 본문 내용을 주의 깊게 분석하여 핵심 내용을 파악합니다.\n2.  **라벨 결정**: 아래 `Labeling Guideline`을 참고하여 PR 내용과 가장 일치하는 라벨을 하나 이상 결정합니다.\n3.  **담당자 결정**: 결정된 라벨을 바탕으로, 아래 `Assignee Matching Rules`에 따라 가장 적합한 담당자 한 명을 결정합니다.\n4.  **판단 근거 정리**: 왜 해당 라벨과 담당자를 선택했는지에 대한 이유(reason)를 한두 문장의 한글로 명확하게 정리합니다.\n5.  **GitHub 업데이트**: `Edit assignees and Labels` 도구를 사용하여, 2단계에서 결정한 라벨과 3단계에서 결정한 담당자를 GitHub PR에 설정합니다.\n6.  **결과 코멘트 작성**: `Add comment to Pull Request` 도구를 사용하여, 4단계에서 정리한 이유를 포함한 코멘트를 아래 `Comment Template`에 맞춰 작성하고 PR에 등록합니다.\n\n\n# Labeling Guideline\n\n## bug\n- 설명: 소프트웨어의 오류, 비정상적인 종료, 예상치 못한 동작 수정\n- 핵심 키워드: `error`, `fix`, `failed`, `broken`, `crash`, `solve`\n\n## enhancement\n- 설명: 새로운 기능 추가 또는 기존 기능 개선\n- 핵심 키워드: `add`, `implement`, `support`, `improve`, `refactor`\n\n## documentation\n- 설명: 문서(README, 주석 등)의 수정, 추가, 보완\n- 핵심 키워드: `docs`, `readme`, `example`, `document`, `guide`\n\n## question\n- 설명: 기능이나 사용법, 코드에 대한 질문\n- 핵심 키워드: `how to`, `is it possible`, `question`, `why`\n\n\n# Assignee Matching Rules\n  - **AnByoungHyun**: `bug` 라벨이 포함된 경우 할당합니다.\n  - **kimsinok0714**: `enhancement` 라벨이 포함된 경우 할당합니다.\n  - **hyuni86**: `documentation` 또는 `question` 라벨이 포함된 경우 할당합니다.\n  - **규칙 충돌 시 우선순위**: 만약 여러 라벨이 선택되어 담당자 규칙이 충돌하는 경우, **`bug` \\> `enhancement` \\> `documentation`, `question` 순서**로 우선순위를 적용하여 한 명만 할당합니다.\n\n\n# Comment Template\n\n```markdown\n🤖 **AI Assistant Comment**\n\n안녕하세요! 이 Pull Request는 AI에 의해 자동으로 분석 및 할당되었습니다.\n\n-   **담당자**: @(담당자 ID)\n-   **라벨**: `(선택된 라벨1)`, `(선택된 라벨2)`\n-   **선정 이유**: (여기에 '판단 근거'를 명시)\n\n*이 작업은 자동화된 프로세스에 의해 수행되었으며, 필요시 담당자나 라벨을 직접 수정할 수 있습니다.*\n```",
+              "role": "system"
+            },
+            {
+              "content": "=# 분석할 Pull Request\n\n## 제목\n{{ $json.body.pull_request.title }}\n\n## 본문\n{{ $json.body.pull_request.body }}\n\n## 요청자\n{{ $json.body.sender.login }}\n\n## 요청번호\n{{ $json.body.pull_request.number }}\n\n## 상태\n{{ $json.body.action }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -464,
+        -16
+      ],
+      "id": "4d428329-d940-4067-9ce0-6c04d00cee92",
+      "name": "Auto assign and label github pull request",
+      "credentials": {
+        "openAiApi": {
+          "id": "ih0gZ127MpP7A6I9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.reviewers.user_prompt }}\n\n반드시 \"Create a review in GitHub\" 툴을 사용하여 github 에 등록 하세요.",
+        "options": {
+          "systemMessage": "={{ $json.reviewers.system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        592
+      ],
+      "id": "60629930-ab94-42da-9eb6-03b47dfae86b",
+      "name": "Code Reviewer AI"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst ai_data = {\n  reviewers: {\n    style: {\n      system_prompt: `\n당신은 코드 스타일과 가독성에 중점을 둔 파이썬 코드 리뷰 전문가이며, 자동화된 PEP 8 스타일 가이드 검사기입니다.\n\n**주요 목표:** 제출된 파이썬 코드가 깔끔하고, 일관성 있으며, 사람이 읽기 쉽게 만드는 것입니다.\n\n**지침:**\n1.  **제공된 파이썬 코드를 분석하세요.**\n2.  **PEP 8 스타일 가이드 위반 사항을 엄격하게 확인하세요.** 주요 검사 항목은 다음과 같습니다:\n    * 들여쓰기 (레벨당 4칸 공백)\n    * 최대 줄 길이 (코드 79자, 주석/독스트링 72자)\n    * 이름 규칙 (함수/변수는 snake_case, 클래스는 PascalCase)\n    * 표현식 및 구문의 공백 사용\n    * 명확하고 간결한 주석\n    * 올바른 import 문 사용\n3.  **명확하고, 건설적이며, 실행 가능한 방식으로 피드백을 제공하세요.** 각 문제에 대해 줄 번호, 문제인 이유(PEP 8 규칙 명시), 그리고 수정된 코드 예시를 제시해야 합니다.\n4.  **피드백을 제안 목록 형식으로 정리하세요.** 코드 스타일에 문제가 없다면 \"스타일이 완벽합니다!\"와 같은 확인 메시지로 응답하세요.\n5.  **코드의 로직, 보안, 성능에 대해서는 언급하지 마세요.** 당신의 역할은 엄격하게 코드 스타일에 국한됩니다.\n6.  **모든 응답은 반드시 한국어로 작성해야 합니다.**\n`,\n      user_prompt: `\n- **Author:** ${ $input.first().json.body.json.body.pull_request.user.login }\n- **Diff URL:** ${ $input.first().json.body.json.body.pull_request.diff_url }\n\n위 사용자의 저장소 목록 URL을 참고하여, 대표적인 파이썬 프로젝트의 코드 스타일을 전반적으로 리뷰하고 개선점을 제안해 주세요.\n`\n    },\n    secure: {\n      system_prompt: `\n당신은 파이썬 애플리케이션 보안을 전문으로 하는 선임 보안 엔지니어입니다. 당신의 임무는 주어진 코드에서 잠재적인 보안 취약점을 식별하는 것입니다.\n\n**주요 목표:** 악용될 수 있는 결함을 사전에 찾아 보고함으로써 보안 사고를 예방하는 것입니다.\n\n**지침:**\n1.  **제공된 파이썬 코드에서 다음과 같은 일반적인 보안 취약점을 분석하세요:**\n    * **인젝션 결함:** SQL 인젝션, 커맨드 인젝션 등\n    * **안전하지 않은 입력 처리:** 사용자 입력에 대한 유효성 검사 또는 새니타이저 부재\n    * **하드코딩된 비밀:** 소스 코드에 직접 작성된 API 키, 비밀번호 등 민감 정보\n    * **안전하지 않은 라이브러리/함수 사용:** 알려진 취약점이 있는 라이브러리나 'pickle', 'eval()'과 같이 위험한 함수 사용\n    * **민감 정보 노출:** 로그나 에러 메시지를 통해 민감한 데이터가 노출되는 경우\n    * **안전하지 않은 역직렬화**\n2.  **발견된 각 취약점에 대해 상세하고 명확한 보고서를 제공하세요.** 보고서에는 다음 내용이 포함되어야 합니다:\n    * 취약점이 발견된 줄 번호와 코드\n    * 취약점 유형 (예: \"SQL 인젝션\")\n    * 잠재적 위험 및 영향\n    * 수정 방법에 대한 구체적인 권장 사항 또는 코드 예시\n3.  **각 발견 사항의 심각도(예: 심각, 높음, 보통, 낮음)를 분류하세요.**\n4.  **취약점이 발견되지 않으면 \"보안 취약점이 발견되지 않았습니다.\"와 같은 확인 메시지로 응답하세요.**\n5.  **보안에 직접적인 영향을 미치지 않는 한, 스타일이나 성능에 대해서는 언급하지 마세요.**\n6.  **모든 응답은 반드시 한국어로 작성해야 합니다.**\n`,\n      user_prompt: `\n- **Author:** ${ $input.first().json.body.json.body.pull_request.user.login }\n- **Diff URL:** ${ $input.first().json.body.json.body.pull_request.diff_url }\n\n위 사용자의 저장소 목록을 검토하여, 코드에서 발견될 수 있는 잠재적인 보안 취약점 패턴이나 위험한 코드 사용례를 분석하고 보고서를 작성해 주세요.\n`\n    },\n    optimization: {\n      system_prompt: `\n당신은 고도로 숙련된 파이썬 성능 엔지니어입니다. 당신의 전문 분야는 속도와 효율성을 위해 코드를 최적화하는 것입니다.\n\n**주요 목표:** 파이썬 코드를 분석하여 더 빠르게 실행되고 더 적은 리소스(CPU, 메모리)를 소비하도록 개선 사항을 제안하는 것입니다.\n\n**지침:**\n1.  **제공된 파이썬 코드에서 성능 병목 현상과 비효율적인 부분을 분석하세요.** 주요 검토 영역은 다음과 같습니다:\n    * **비효율적인 알고리즘 또는 자료구조:** 검색 시 set이나 dictionary가 더 빠름에도 list를 사용하는 경우\n    * **불필요한 루프 또는 계산:** 루프 내에서 반복되는 중복 계산\n    * **비효율적인 문자열 연결**\n    * **메모리 비효율성:** 대용량 파일을 한 번에 메모리에 로드하는 경우\n    * **라이브러리의 비최적 사용**\n2.  **구체적이고 실용적인 최적화 방안을 제안하세요.** 각 문제점에 대해 다음을 명시해야 합니다:\n    * 문제가 되는 코드의 줄 번호\n    * 현재 코드가 비효율적인 이유\n    * 성능이 더 좋은 대안 코드 (가능한 경우 코드 예시 포함)\n    * 제안하는 방식의 장단점 (예: 속도 향상을 위한 메모리 사용량 증가 등)\n3.  **가장 큰 성능 향상을 가져올 수 있는 제안에 집중하세요.**\n4.  **코드가 이미 잘 최적화되어 있다면 \"코드가 효율적으로 작성되었습니다.\"와 같은 확인 메시지로 응답하세요.**\n5.  **성능 문제와 직접 관련되지 않는 한, 스타일이나 보안에 대해서는 언급하지 마세요.**\n6.  **모든 응답은 반드시 한국어로 작성해야 합니다.**\n`,\n      user_prompt: `\n- **Author:** ${ $input.first().json.body.json.body.pull_request.user.login }\n- **Diff URL:** ${ $input.first().json.body.json.body.pull_request.diff_url }\n\n위 사용자의 저장소 목록에 있는 코드들을 바탕으로, 성능 저하를 유발할 수 있는 일반적인 패턴(예: 비효율적인 루프, 자료구조 선택)을 찾아내고 최적화 방안을 제안해 주세요.\n`\n    }\n  }\n}\n\nfor (const item of $input.all()) {\n  if($input.first().json.headers.type == 'style') {\n    item.json.reviewers = ai_data.reviewers.style;\n  } else if($input.first().json.headers.type == 'secure') {\n    item.json.reviewers = ai_data.reviewers.secure;\n  } else if($input.first().json.headers.type == 'optimization') {\n    item.json.reviewers = ai_data.reviewers.optimization;\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        592
+      ],
+      "id": "14ce7652-12d7-42da-bf10-c452dc8a5951",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# 분석할 Pull Request\n\n## 제목\n{{ $json.body.pull_request.title }}\n\n## 본문\n{{ $json.body.pull_request.body }}\n\n## 요청자\n{{ $json.body.sender.login }}\n\n## 요청번호\n{{ $json.body.pull_request.number }}\n\n## 상태\n{{ $json.body.action }}",
+        "options": {
+          "systemMessage": "# Role & Gole\n당신은 GitHub Pull Request(PR)를 분석하여 자동으로 라벨과 담당자를 할당하는 AI 어시스턴트입니다. 주어진 PR의 제목과 본문을 분석하여, 정의된 규칙에 따라 가장 적합한 라벨과 담당자를 GitHub에 설정하고, 실행 결과를 코멘트로 남기는 것을 목표로 합니다.\n\n\n# Workflow\n1.  **PR 내용 분석**: 주어진 Pull Request의 제목과 본문 내용을 주의 깊게 분석하여 핵심 내용을 파악합니다.\n2.  **라벨 결정**: 아래 `Labeling Guideline`을 참고하여 PR 내용과 가장 일치하는 라벨을 하나 이상 결정합니다.\n3.  **담당자 결정**: 결정된 라벨을 바탕으로, 아래 `Assignee Matching Rules`에 따라 가장 적합한 담당자 한 명을 결정합니다.\n4.  **판단 근거 정리**: 왜 해당 라벨과 담당자를 선택했는지에 대한 이유(reason)를 한두 문장의 한글로 명확하게 정리합니다.\n5.  **GitHub 업데이트**: `Edit assignees and Labels` 도구를 사용하여, 2단계에서 결정한 라벨과 3단계에서 결정한 담당자를 GitHub PR에 설정합니다.\n6.  **결과 코멘트 작성**: `Add comment to Pull Request` 도구를 사용하여, 4단계에서 정리한 이유를 포함한 코멘트를 아래 `Comment Template`에 맞춰 작성하고 PR에 등록합니다.\n\n# Tools\n- `Edit assignees and Labels({assignees: string[], labels: string[]})`: 담당자와 라벨을 설정하는 도구\n- `Add comment to Pull Request({comment: string})`: PR에 코멘트를 추가하는 도구\n\n\n# Labeling Guideline\n\n## bug\n- 설명: 소프트웨어의 오류, 비정상적인 종료, 예상치 못한 동작 수정\n- 핵심 키워드: `error`, `fix`, `failed`, `broken`, `crash`, `solve`\n\n## enhancement\n- 설명: 새로운 기능 추가 또는 기존 기능 개선\n- 핵심 키워드: `add`, `implement`, `support`, `improve`, `refactor`\n\n## documentation\n- 설명: 문서(README, 주석 등)의 수정, 추가, 보완\n- 핵심 키워드: `docs`, `readme`, `example`, `document`, `guide`\n\n## question\n- 설명: 기능이나 사용법, 코드에 대한 질문\n- 핵심 키워드: `how to`, `is it possible`, `question`, `why`\n\n\n# Assignee Matching Rules\n  - **AnByoungHyun**: `bug` 라벨이 포함된 경우 할당합니다.\n  - **kimsinok0714**: `enhancement` 라벨이 포함된 경우 할당합니다.\n  - **hyuni86**: `documentation` 또는 `question` 라벨이 포함된 경우 할당합니다.\n  - **규칙 충돌 시 우선순위**: 만약 여러 라벨이 선택되어 담당자 규칙이 충돌하는 경우, **`bug` \\> `enhancement` \\> `documentation`, `question` 순서**로 우선순위를 적용하여 한 명만 할당합니다.\n\n\n# Comment Template\n\n```markdown\n🤖 **AI Assistant Comment**\n\n안녕하세요! 이 Pull Request는 AI에 의해 자동으로 분석 및 할당되었습니다.\n\n-   **담당자**: @(담당자 ID)\n-   **라벨**: `(선택된 라벨1)`, `(선택된 라벨2)`\n-   **선정 이유**: (여기에 '판단 근거'를 명시)\n\n*이 작업은 자동화된 프로세스에 의해 수행되었으며, 필요시 담당자나 라벨을 직접 수정할 수 있습니다.*\n```"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        160
+      ],
+      "id": "05296e41-c6d7-49e2-9297-34a7e8d3f049",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelSource": "inferenceProfile",
+        "model": "apac.amazon.nova-pro-v1:0",
+        "options": {
+          "maxTokensToSample": 5000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        384
+      ],
+      "id": "776515fd-a333-4ab5-bedd-ffa26a76779f",
+      "name": "AWS Bedrock Chat Model",
+      "credentials": {
+        "aws": {
+          "id": "wtXKpduEjONsx75k",
+          "name": "AWS account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cbd914bcd557.ngrok-free.app/webhook/ca5928f7-4f84-422b-9185-18c50911d8ea",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"type\": \"style\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Github Trigger').item }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        608,
+        -48
+      ],
+      "id": "48d251a2-3532-4113-a883-f78ae922870f",
+      "name": "Code Style Review Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cbd914bcd557.ngrok-free.app/webhook/ca5928f7-4f84-422b-9185-18c50911d8ea",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"type\": \"secure\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Github Trigger').item }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        608,
+        160
+      ],
+      "id": "b540dc9c-0870-4b14-9d60-82ab83f665c3",
+      "name": "Code Secure Review Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cbd914bcd557.ngrok-free.app/webhook/ca5928f7-4f84-422b-9185-18c50911d8ea",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"type\": \"optimization\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Github Trigger').item }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        608,
+        368
+      ],
+      "id": "3d512f6f-60fc-4e05-9de3-21afbeb788c9",
+      "name": "Code Optimization Review Request"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ca5928f7-4f84-422b-9185-18c50911d8ea",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        592
+      ],
+      "id": "b95cafde-2662-4c5e-a387-671dbee37a2c",
+      "name": "Webhook",
+      "webhookId": "ca5928f7-4f84-422b-9185-18c50911d8ea"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "cbd914bcd557.ngrok-free.app",
+            "user-agent": "axios/1.8.3",
+            "content-length": "29409",
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "type": "secure",
+            "x-forwarded-for": "59.10.176.2",
+            "x-forwarded-host": "cbd914bcd557.ngrok-free.app",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "json": {
+              "body": {
+                "action": "reopened",
+                "number": 26,
+                "pull_request": {
+                  "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26",
+                  "id": 2805761337,
+                  "node_id": "PR_kwDOPa3as86nPIU5",
+                  "html_url": "https://github.com/AnByoungHyun/n8n-workflow/pull/26",
+                  "diff_url": "https://github.com/AnByoungHyun/n8n-workflow/pull/26.diff",
+                  "patch_url": "https://github.com/AnByoungHyun/n8n-workflow/pull/26.patch",
+                  "issue_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26",
+                  "number": 26,
+                  "state": "open",
+                  "locked": false,
+                  "title": "feat: Alembic을 도입하여 데이터베이스 스키마 관리 개선 (#25)",
+                  "user": {
+                    "login": "AnByoungHyun",
+                    "id": 12080248,
+                    "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                    "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/AnByoungHyun",
+                    "html_url": "https://github.com/AnByoungHyun",
+                    "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                    "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                    "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                    "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                    "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                    "type": "User",
+                    "user_view_type": "public",
+                    "site_admin": false
+                  },
+                  "body": "## Pull Request 본문\n\n### 📋 이슈\n- Resolves #25\n\n###  개요\n현재 애플리케이션의 데이터베이스 스키마 관리 방식을 개선하기 위해 Alembic을 도입했습니다. 기존의 `Base.metadata.create_all()` 방식에서 벗어나 안전하고 체계적인 마이그레이션 시스템을 구축했습니다.\n\n### 🔧 주요 변경사항\n\n#### 1. **Alembic 환경 구성**\n- `alembic init alembic` 명령으로 Alembic 초기 설정\n- `alembic.ini`에서 SQLite 데이터베이스 URL 설정\n- `alembic/env.py`에서 모델 import 및 target_metadata 설정\n\n#### 2. **기존 코드 개선**\n- `app/main.py`에서 `Base.metadata.create_all(bind=engine)` 제거\n- `requirements.txt` 파일 생성 및 Alembic 의존성 추가\n\n#### 3. **초기 마이그레이션 생성**\n- `alembic revision --autogenerate` 명령으로 users 테이블 마이그레이션 생성\n- `alembic upgrade head` 명령으로 마이그레이션 적용\n\n#### 4. **문서화**\n- `README.md`에 Alembic 사용법 상세 추가\n- 마이그레이션 생성, 적용, 롤백 방법 안내\n\n### ✨ 기대 효과\n\n#### **Before (As-Is)**\n- ❌ 스키마 변경 불가: 모델 변경 시 DB에 반영되지 않음\n- ❌ 데이터 무결성 위험: 수동 스키마 변경으로 인한 실수 가능성\n- ❌ 운영 환경 불안정성: `create_all` 호출의 잠재적 위험\n\n#### **After (To-Be)**\n- ✅ **안전한 스키마 관리**: 데이터베이스 스키마 변경을 버전으로 관리\n- ✅ **협업 효율성 증대**: 모든 팀원이 동일한 마이그레이션 스크립트 공유\n- ✅ **신뢰성 있는 배포**: 개발, 테스트, 운영 환경에서 예측 가능한 DB 스키마 배포\n- ✅ **롤백 가능**: 필요시 이전 스키마 버전으로 안전하게 롤백\n\n### 💊 테스트 방법\n\n```bash\n# 1. 의존성 설치\npip install -r requirements.txt\n\n# 2. 마이그레이션 실행\nalembic upgrade head\n\n# 3. 애플리케이션 실행\nuvicorn app.main:app --reload\n\n# 4. 마이그레이션 상태 확인\nalembic current\n```\n\n### ℹ️ 추가 정보\n- 마이그레이션 파일: `alembic/versions/3065cf9a4f9b_initial_migration_create_users_table.py`\n- 데이터베이스: SQLite (`test.db`)\n- 영향받는 테이블: `users` 테이블 (id, username, email, hashed_password)\n\n---\n\n이 PR은 데이터베이스 스키마 관리의 안정성과 협업 효율성을 크게 향상시킬 것으로 기대됩니다. 리뷰 부탁드립니다! 🙏",
+                  "created_at": "2025-09-07T05:09:18Z",
+                  "updated_at": "2025-09-07T05:53:46Z",
+                  "closed_at": null,
+                  "merged_at": null,
+                  "merge_commit_sha": null,
+                  "assignee": {
+                    "login": "kimsinok0714",
+                    "id": 176567037,
+                    "node_id": "U_kgDOCoYy_Q",
+                    "avatar_url": "https://avatars.githubusercontent.com/u/176567037?v=4",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/kimsinok0714",
+                    "html_url": "https://github.com/kimsinok0714",
+                    "followers_url": "https://api.github.com/users/kimsinok0714/followers",
+                    "following_url": "https://api.github.com/users/kimsinok0714/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/kimsinok0714/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/kimsinok0714/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/kimsinok0714/subscriptions",
+                    "organizations_url": "https://api.github.com/users/kimsinok0714/orgs",
+                    "repos_url": "https://api.github.com/users/kimsinok0714/repos",
+                    "events_url": "https://api.github.com/users/kimsinok0714/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/kimsinok0714/received_events",
+                    "type": "User",
+                    "user_view_type": "public",
+                    "site_admin": false
+                  },
+                  "assignees": [
+                    {
+                      "login": "kimsinok0714",
+                      "id": 176567037,
+                      "node_id": "U_kgDOCoYy_Q",
+                      "avatar_url": "https://avatars.githubusercontent.com/u/176567037?v=4",
+                      "gravatar_id": "",
+                      "url": "https://api.github.com/users/kimsinok0714",
+                      "html_url": "https://github.com/kimsinok0714",
+                      "followers_url": "https://api.github.com/users/kimsinok0714/followers",
+                      "following_url": "https://api.github.com/users/kimsinok0714/following{/other_user}",
+                      "gists_url": "https://api.github.com/users/kimsinok0714/gists{/gist_id}",
+                      "starred_url": "https://api.github.com/users/kimsinok0714/starred{/owner}{/repo}",
+                      "subscriptions_url": "https://api.github.com/users/kimsinok0714/subscriptions",
+                      "organizations_url": "https://api.github.com/users/kimsinok0714/orgs",
+                      "repos_url": "https://api.github.com/users/kimsinok0714/repos",
+                      "events_url": "https://api.github.com/users/kimsinok0714/events{/privacy}",
+                      "received_events_url": "https://api.github.com/users/kimsinok0714/received_events",
+                      "type": "User",
+                      "user_view_type": "public",
+                      "site_admin": false
+                    }
+                  ],
+                  "requested_reviewers": [
+                    {
+                      "login": "kimsinok0714",
+                      "id": 176567037,
+                      "node_id": "U_kgDOCoYy_Q",
+                      "avatar_url": "https://avatars.githubusercontent.com/u/176567037?v=4",
+                      "gravatar_id": "",
+                      "url": "https://api.github.com/users/kimsinok0714",
+                      "html_url": "https://github.com/kimsinok0714",
+                      "followers_url": "https://api.github.com/users/kimsinok0714/followers",
+                      "following_url": "https://api.github.com/users/kimsinok0714/following{/other_user}",
+                      "gists_url": "https://api.github.com/users/kimsinok0714/gists{/gist_id}",
+                      "starred_url": "https://api.github.com/users/kimsinok0714/starred{/owner}{/repo}",
+                      "subscriptions_url": "https://api.github.com/users/kimsinok0714/subscriptions",
+                      "organizations_url": "https://api.github.com/users/kimsinok0714/orgs",
+                      "repos_url": "https://api.github.com/users/kimsinok0714/repos",
+                      "events_url": "https://api.github.com/users/kimsinok0714/events{/privacy}",
+                      "received_events_url": "https://api.github.com/users/kimsinok0714/received_events",
+                      "type": "User",
+                      "user_view_type": "public",
+                      "site_admin": false
+                    }
+                  ],
+                  "requested_teams": [],
+                  "labels": [
+                    {
+                      "id": 9081022405,
+                      "node_id": "LA_kwDOPa3as88AAAACHUVnxQ",
+                      "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels/enhancement",
+                      "name": "enhancement",
+                      "color": "a2eeef",
+                      "default": true,
+                      "description": "New feature or request"
+                    }
+                  ],
+                  "milestone": null,
+                  "draft": false,
+                  "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/commits",
+                  "review_comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/comments",
+                  "review_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/comments{/number}",
+                  "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26/comments",
+                  "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/da2107e63fcc94675784ed10d1db5ddfe8a51f02",
+                  "head": {
+                    "label": "AnByoungHyun:enhancement-25",
+                    "ref": "enhancement-25",
+                    "sha": "da2107e63fcc94675784ed10d1db5ddfe8a51f02",
+                    "user": {
+                      "login": "AnByoungHyun",
+                      "id": 12080248,
+                      "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                      "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                      "gravatar_id": "",
+                      "url": "https://api.github.com/users/AnByoungHyun",
+                      "html_url": "https://github.com/AnByoungHyun",
+                      "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                      "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                      "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                      "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                      "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                      "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                      "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                      "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                      "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                      "type": "User",
+                      "user_view_type": "public",
+                      "site_admin": false
+                    },
+                    "repo": {
+                      "id": 1034803891,
+                      "node_id": "R_kgDOPa3asw",
+                      "name": "n8n-workflow",
+                      "full_name": "AnByoungHyun/n8n-workflow",
+                      "private": false,
+                      "owner": {
+                        "login": "AnByoungHyun",
+                        "id": 12080248,
+                        "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                        "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                        "gravatar_id": "",
+                        "url": "https://api.github.com/users/AnByoungHyun",
+                        "html_url": "https://github.com/AnByoungHyun",
+                        "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                        "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                        "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                        "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                        "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                        "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                        "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                        "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                        "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                        "type": "User",
+                        "user_view_type": "public",
+                        "site_admin": false
+                      },
+                      "html_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                      "description": "n8n workflow sample repo",
+                      "fork": false,
+                      "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow",
+                      "forks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/forks",
+                      "keys_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/keys{/key_id}",
+                      "collaborators_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/collaborators{/collaborator}",
+                      "teams_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/teams",
+                      "hooks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/hooks",
+                      "issue_events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/events{/number}",
+                      "events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/events",
+                      "assignees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/assignees{/user}",
+                      "branches_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/branches{/branch}",
+                      "tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/tags",
+                      "blobs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/blobs{/sha}",
+                      "git_tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/tags{/sha}",
+                      "git_refs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/refs{/sha}",
+                      "trees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/trees{/sha}",
+                      "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/{sha}",
+                      "languages_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/languages",
+                      "stargazers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/stargazers",
+                      "contributors_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contributors",
+                      "subscribers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscribers",
+                      "subscription_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscription",
+                      "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/commits{/sha}",
+                      "git_commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/commits{/sha}",
+                      "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/comments{/number}",
+                      "issue_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/comments{/number}",
+                      "contents_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contents/{+path}",
+                      "compare_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/compare/{base}...{head}",
+                      "merges_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/merges",
+                      "archive_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/{archive_format}{/ref}",
+                      "downloads_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/downloads",
+                      "issues_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues{/number}",
+                      "pulls_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls{/number}",
+                      "milestones_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/milestones{/number}",
+                      "notifications_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/notifications{?since,all,participating}",
+                      "labels_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels{/name}",
+                      "releases_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/releases{/id}",
+                      "deployments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/deployments",
+                      "created_at": "2025-08-09T02:49:59Z",
+                      "updated_at": "2025-09-05T11:29:27Z",
+                      "pushed_at": "2025-09-07T04:53:59Z",
+                      "git_url": "git://github.com/AnByoungHyun/n8n-workflow.git",
+                      "ssh_url": "git@github.com:AnByoungHyun/n8n-workflow.git",
+                      "clone_url": "https://github.com/AnByoungHyun/n8n-workflow.git",
+                      "svn_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                      "homepage": null,
+                      "size": 31,
+                      "stargazers_count": 0,
+                      "watchers_count": 0,
+                      "language": "Python",
+                      "has_issues": true,
+                      "has_projects": true,
+                      "has_downloads": true,
+                      "has_wiki": true,
+                      "has_pages": false,
+                      "has_discussions": false,
+                      "forks_count": 0,
+                      "mirror_url": null,
+                      "archived": false,
+                      "disabled": false,
+                      "open_issues_count": 10,
+                      "license": null,
+                      "allow_forking": true,
+                      "is_template": false,
+                      "web_commit_signoff_required": false,
+                      "topics": [],
+                      "visibility": "public",
+                      "forks": 0,
+                      "open_issues": 10,
+                      "watchers": 0,
+                      "default_branch": "main",
+                      "allow_squash_merge": true,
+                      "allow_merge_commit": true,
+                      "allow_rebase_merge": true,
+                      "allow_auto_merge": false,
+                      "delete_branch_on_merge": false,
+                      "allow_update_branch": false,
+                      "use_squash_pr_title_as_default": false,
+                      "squash_merge_commit_message": "COMMIT_MESSAGES",
+                      "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+                      "merge_commit_message": "PR_TITLE",
+                      "merge_commit_title": "MERGE_MESSAGE"
+                    }
+                  },
+                  "base": {
+                    "label": "AnByoungHyun:main",
+                    "ref": "main",
+                    "sha": "c93f1d79e2e37ea99feb82df106ba2e7de861b1a",
+                    "user": {
+                      "login": "AnByoungHyun",
+                      "id": 12080248,
+                      "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                      "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                      "gravatar_id": "",
+                      "url": "https://api.github.com/users/AnByoungHyun",
+                      "html_url": "https://github.com/AnByoungHyun",
+                      "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                      "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                      "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                      "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                      "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                      "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                      "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                      "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                      "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                      "type": "User",
+                      "user_view_type": "public",
+                      "site_admin": false
+                    },
+                    "repo": {
+                      "id": 1034803891,
+                      "node_id": "R_kgDOPa3asw",
+                      "name": "n8n-workflow",
+                      "full_name": "AnByoungHyun/n8n-workflow",
+                      "private": false,
+                      "owner": {
+                        "login": "AnByoungHyun",
+                        "id": 12080248,
+                        "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                        "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                        "gravatar_id": "",
+                        "url": "https://api.github.com/users/AnByoungHyun",
+                        "html_url": "https://github.com/AnByoungHyun",
+                        "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                        "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                        "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                        "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                        "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                        "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                        "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                        "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                        "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                        "type": "User",
+                        "user_view_type": "public",
+                        "site_admin": false
+                      },
+                      "html_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                      "description": "n8n workflow sample repo",
+                      "fork": false,
+                      "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow",
+                      "forks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/forks",
+                      "keys_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/keys{/key_id}",
+                      "collaborators_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/collaborators{/collaborator}",
+                      "teams_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/teams",
+                      "hooks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/hooks",
+                      "issue_events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/events{/number}",
+                      "events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/events",
+                      "assignees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/assignees{/user}",
+                      "branches_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/branches{/branch}",
+                      "tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/tags",
+                      "blobs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/blobs{/sha}",
+                      "git_tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/tags{/sha}",
+                      "git_refs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/refs{/sha}",
+                      "trees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/trees{/sha}",
+                      "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/{sha}",
+                      "languages_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/languages",
+                      "stargazers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/stargazers",
+                      "contributors_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contributors",
+                      "subscribers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscribers",
+                      "subscription_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscription",
+                      "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/commits{/sha}",
+                      "git_commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/commits{/sha}",
+                      "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/comments{/number}",
+                      "issue_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/comments{/number}",
+                      "contents_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contents/{+path}",
+                      "compare_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/compare/{base}...{head}",
+                      "merges_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/merges",
+                      "archive_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/{archive_format}{/ref}",
+                      "downloads_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/downloads",
+                      "issues_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues{/number}",
+                      "pulls_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls{/number}",
+                      "milestones_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/milestones{/number}",
+                      "notifications_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/notifications{?since,all,participating}",
+                      "labels_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels{/name}",
+                      "releases_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/releases{/id}",
+                      "deployments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/deployments",
+                      "created_at": "2025-08-09T02:49:59Z",
+                      "updated_at": "2025-09-05T11:29:27Z",
+                      "pushed_at": "2025-09-07T04:53:59Z",
+                      "git_url": "git://github.com/AnByoungHyun/n8n-workflow.git",
+                      "ssh_url": "git@github.com:AnByoungHyun/n8n-workflow.git",
+                      "clone_url": "https://github.com/AnByoungHyun/n8n-workflow.git",
+                      "svn_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                      "homepage": null,
+                      "size": 31,
+                      "stargazers_count": 0,
+                      "watchers_count": 0,
+                      "language": "Python",
+                      "has_issues": true,
+                      "has_projects": true,
+                      "has_downloads": true,
+                      "has_wiki": true,
+                      "has_pages": false,
+                      "has_discussions": false,
+                      "forks_count": 0,
+                      "mirror_url": null,
+                      "archived": false,
+                      "disabled": false,
+                      "open_issues_count": 10,
+                      "license": null,
+                      "allow_forking": true,
+                      "is_template": false,
+                      "web_commit_signoff_required": false,
+                      "topics": [],
+                      "visibility": "public",
+                      "forks": 0,
+                      "open_issues": 10,
+                      "watchers": 0,
+                      "default_branch": "main",
+                      "allow_squash_merge": true,
+                      "allow_merge_commit": true,
+                      "allow_rebase_merge": true,
+                      "allow_auto_merge": false,
+                      "delete_branch_on_merge": false,
+                      "allow_update_branch": false,
+                      "use_squash_pr_title_as_default": false,
+                      "squash_merge_commit_message": "COMMIT_MESSAGES",
+                      "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+                      "merge_commit_message": "PR_TITLE",
+                      "merge_commit_title": "MERGE_MESSAGE"
+                    }
+                  },
+                  "_links": {
+                    "self": {
+                      "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26"
+                    },
+                    "html": {
+                      "href": "https://github.com/AnByoungHyun/n8n-workflow/pull/26"
+                    },
+                    "issue": {
+                      "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26"
+                    },
+                    "comments": {
+                      "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26/comments"
+                    },
+                    "review_comments": {
+                      "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/comments"
+                    },
+                    "review_comment": {
+                      "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/comments{/number}"
+                    },
+                    "commits": {
+                      "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/commits"
+                    },
+                    "statuses": {
+                      "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/da2107e63fcc94675784ed10d1db5ddfe8a51f02"
+                    }
+                  },
+                  "author_association": "OWNER",
+                  "auto_merge": null,
+                  "active_lock_reason": null,
+                  "merged": false,
+                  "mergeable": null,
+                  "rebaseable": null,
+                  "mergeable_state": "unknown",
+                  "merged_by": null,
+                  "comments": 3,
+                  "review_comments": 0,
+                  "maintainer_can_modify": false,
+                  "commits": 1,
+                  "additions": 359,
+                  "deletions": 8,
+                  "changed_files": 13
+                },
+                "repository": {
+                  "id": 1034803891,
+                  "node_id": "R_kgDOPa3asw",
+                  "name": "n8n-workflow",
+                  "full_name": "AnByoungHyun/n8n-workflow",
+                  "private": false,
+                  "owner": {
+                    "login": "AnByoungHyun",
+                    "id": 12080248,
+                    "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                    "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/AnByoungHyun",
+                    "html_url": "https://github.com/AnByoungHyun",
+                    "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                    "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                    "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                    "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                    "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                    "type": "User",
+                    "user_view_type": "public",
+                    "site_admin": false
+                  },
+                  "html_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                  "description": "n8n workflow sample repo",
+                  "fork": false,
+                  "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow",
+                  "forks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/forks",
+                  "keys_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/keys{/key_id}",
+                  "collaborators_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/collaborators{/collaborator}",
+                  "teams_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/teams",
+                  "hooks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/hooks",
+                  "issue_events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/events{/number}",
+                  "events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/events",
+                  "assignees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/assignees{/user}",
+                  "branches_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/branches{/branch}",
+                  "tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/tags",
+                  "blobs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/blobs{/sha}",
+                  "git_tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/tags{/sha}",
+                  "git_refs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/refs{/sha}",
+                  "trees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/trees{/sha}",
+                  "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/{sha}",
+                  "languages_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/languages",
+                  "stargazers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/stargazers",
+                  "contributors_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contributors",
+                  "subscribers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscribers",
+                  "subscription_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscription",
+                  "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/commits{/sha}",
+                  "git_commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/commits{/sha}",
+                  "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/comments{/number}",
+                  "issue_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/comments{/number}",
+                  "contents_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contents/{+path}",
+                  "compare_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/compare/{base}...{head}",
+                  "merges_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/merges",
+                  "archive_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/{archive_format}{/ref}",
+                  "downloads_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/downloads",
+                  "issues_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues{/number}",
+                  "pulls_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls{/number}",
+                  "milestones_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/milestones{/number}",
+                  "notifications_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/notifications{?since,all,participating}",
+                  "labels_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels{/name}",
+                  "releases_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/releases{/id}",
+                  "deployments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/deployments",
+                  "created_at": "2025-08-09T02:49:59Z",
+                  "updated_at": "2025-09-05T11:29:27Z",
+                  "pushed_at": "2025-09-07T04:53:59Z",
+                  "git_url": "git://github.com/AnByoungHyun/n8n-workflow.git",
+                  "ssh_url": "git@github.com:AnByoungHyun/n8n-workflow.git",
+                  "clone_url": "https://github.com/AnByoungHyun/n8n-workflow.git",
+                  "svn_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                  "homepage": null,
+                  "size": 31,
+                  "stargazers_count": 0,
+                  "watchers_count": 0,
+                  "language": "Python",
+                  "has_issues": true,
+                  "has_projects": true,
+                  "has_downloads": true,
+                  "has_wiki": true,
+                  "has_pages": false,
+                  "has_discussions": false,
+                  "forks_count": 0,
+                  "mirror_url": null,
+                  "archived": false,
+                  "disabled": false,
+                  "open_issues_count": 10,
+                  "license": null,
+                  "allow_forking": true,
+                  "is_template": false,
+                  "web_commit_signoff_required": false,
+                  "topics": [],
+                  "visibility": "public",
+                  "forks": 0,
+                  "open_issues": 10,
+                  "watchers": 0,
+                  "default_branch": "main"
+                },
+                "sender": {
+                  "login": "AnByoungHyun",
+                  "id": 12080248,
+                  "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/AnByoungHyun",
+                  "html_url": "https://github.com/AnByoungHyun",
+                  "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                  "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                  "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                  "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                  "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                }
+              },
+              "headers": {
+                "host": "cbd914bcd557.ngrok-free.app",
+                "user-agent": "GitHub-Hookshot/bebe1c7",
+                "content-length": "28830",
+                "accept": "*/*",
+                "content-type": "application/json",
+                "x-forwarded-for": "140.82.115.20",
+                "x-forwarded-host": "cbd914bcd557.ngrok-free.app",
+                "x-forwarded-proto": "https",
+                "x-github-delivery": "04c25e30-8baf-11f0-9272-c47d44d0358e",
+                "x-github-event": "pull_request",
+                "x-github-hook-id": "568265570",
+                "x-github-hook-installation-target-id": "1034803891",
+                "x-github-hook-installation-target-type": "repository",
+                "accept-encoding": "gzip"
+              },
+              "query": {}
+            },
+            "pairedItem": {
+              "item": 0
+            }
+          },
+          "webhookUrl": "https://cbd914bcd557.ngrok-free.app/webhook/ca5928f7-4f84-422b-9185-18c50911d8ea",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Github Trigger": [
+      {
+        "json": {
+          "body": {
+            "action": "reopened",
+            "number": 26,
+            "pull_request": {
+              "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26",
+              "id": 2805761337,
+              "node_id": "PR_kwDOPa3as86nPIU5",
+              "html_url": "https://github.com/AnByoungHyun/n8n-workflow/pull/26",
+              "diff_url": "https://github.com/AnByoungHyun/n8n-workflow/pull/26.diff",
+              "patch_url": "https://github.com/AnByoungHyun/n8n-workflow/pull/26.patch",
+              "issue_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26",
+              "number": 26,
+              "state": "open",
+              "locked": false,
+              "title": "feat: Alembic을 도입하여 데이터베이스 스키마 관리 개선 (#25)",
+              "user": {
+                "login": "AnByoungHyun",
+                "id": 12080248,
+                "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                "gravatar_id": "",
+                "url": "https://api.github.com/users/AnByoungHyun",
+                "html_url": "https://github.com/AnByoungHyun",
+                "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                "type": "User",
+                "user_view_type": "public",
+                "site_admin": false
+              },
+              "body": "## Pull Request 본문\n\n### 📋 이슈\n- Resolves #25\n\n###  개요\n현재 애플리케이션의 데이터베이스 스키마 관리 방식을 개선하기 위해 Alembic을 도입했습니다. 기존의 `Base.metadata.create_all()` 방식에서 벗어나 안전하고 체계적인 마이그레이션 시스템을 구축했습니다.\n\n### 🔧 주요 변경사항\n\n#### 1. **Alembic 환경 구성**\n- `alembic init alembic` 명령으로 Alembic 초기 설정\n- `alembic.ini`에서 SQLite 데이터베이스 URL 설정\n- `alembic/env.py`에서 모델 import 및 target_metadata 설정\n\n#### 2. **기존 코드 개선**\n- `app/main.py`에서 `Base.metadata.create_all(bind=engine)` 제거\n- `requirements.txt` 파일 생성 및 Alembic 의존성 추가\n\n#### 3. **초기 마이그레이션 생성**\n- `alembic revision --autogenerate` 명령으로 users 테이블 마이그레이션 생성\n- `alembic upgrade head` 명령으로 마이그레이션 적용\n\n#### 4. **문서화**\n- `README.md`에 Alembic 사용법 상세 추가\n- 마이그레이션 생성, 적용, 롤백 방법 안내\n\n### ✨ 기대 효과\n\n#### **Before (As-Is)**\n- ❌ 스키마 변경 불가: 모델 변경 시 DB에 반영되지 않음\n- ❌ 데이터 무결성 위험: 수동 스키마 변경으로 인한 실수 가능성\n- ❌ 운영 환경 불안정성: `create_all` 호출의 잠재적 위험\n\n#### **After (To-Be)**\n- ✅ **안전한 스키마 관리**: 데이터베이스 스키마 변경을 버전으로 관리\n- ✅ **협업 효율성 증대**: 모든 팀원이 동일한 마이그레이션 스크립트 공유\n- ✅ **신뢰성 있는 배포**: 개발, 테스트, 운영 환경에서 예측 가능한 DB 스키마 배포\n- ✅ **롤백 가능**: 필요시 이전 스키마 버전으로 안전하게 롤백\n\n### 💊 테스트 방법\n\n```bash\n# 1. 의존성 설치\npip install -r requirements.txt\n\n# 2. 마이그레이션 실행\nalembic upgrade head\n\n# 3. 애플리케이션 실행\nuvicorn app.main:app --reload\n\n# 4. 마이그레이션 상태 확인\nalembic current\n```\n\n### ℹ️ 추가 정보\n- 마이그레이션 파일: `alembic/versions/3065cf9a4f9b_initial_migration_create_users_table.py`\n- 데이터베이스: SQLite (`test.db`)\n- 영향받는 테이블: `users` 테이블 (id, username, email, hashed_password)\n\n---\n\n이 PR은 데이터베이스 스키마 관리의 안정성과 협업 효율성을 크게 향상시킬 것으로 기대됩니다. 리뷰 부탁드립니다! 🙏",
+              "created_at": "2025-09-07T05:09:18Z",
+              "updated_at": "2025-09-07T06:27:10Z",
+              "closed_at": null,
+              "merged_at": null,
+              "merge_commit_sha": null,
+              "assignee": {
+                "login": "kimsinok0714",
+                "id": 176567037,
+                "node_id": "U_kgDOCoYy_Q",
+                "avatar_url": "https://avatars.githubusercontent.com/u/176567037?v=4",
+                "gravatar_id": "",
+                "url": "https://api.github.com/users/kimsinok0714",
+                "html_url": "https://github.com/kimsinok0714",
+                "followers_url": "https://api.github.com/users/kimsinok0714/followers",
+                "following_url": "https://api.github.com/users/kimsinok0714/following{/other_user}",
+                "gists_url": "https://api.github.com/users/kimsinok0714/gists{/gist_id}",
+                "starred_url": "https://api.github.com/users/kimsinok0714/starred{/owner}{/repo}",
+                "subscriptions_url": "https://api.github.com/users/kimsinok0714/subscriptions",
+                "organizations_url": "https://api.github.com/users/kimsinok0714/orgs",
+                "repos_url": "https://api.github.com/users/kimsinok0714/repos",
+                "events_url": "https://api.github.com/users/kimsinok0714/events{/privacy}",
+                "received_events_url": "https://api.github.com/users/kimsinok0714/received_events",
+                "type": "User",
+                "user_view_type": "public",
+                "site_admin": false
+              },
+              "assignees": [
+                {
+                  "login": "kimsinok0714",
+                  "id": 176567037,
+                  "node_id": "U_kgDOCoYy_Q",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/176567037?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/kimsinok0714",
+                  "html_url": "https://github.com/kimsinok0714",
+                  "followers_url": "https://api.github.com/users/kimsinok0714/followers",
+                  "following_url": "https://api.github.com/users/kimsinok0714/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/kimsinok0714/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/kimsinok0714/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/kimsinok0714/subscriptions",
+                  "organizations_url": "https://api.github.com/users/kimsinok0714/orgs",
+                  "repos_url": "https://api.github.com/users/kimsinok0714/repos",
+                  "events_url": "https://api.github.com/users/kimsinok0714/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/kimsinok0714/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                }
+              ],
+              "requested_reviewers": [
+                {
+                  "login": "kimsinok0714",
+                  "id": 176567037,
+                  "node_id": "U_kgDOCoYy_Q",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/176567037?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/kimsinok0714",
+                  "html_url": "https://github.com/kimsinok0714",
+                  "followers_url": "https://api.github.com/users/kimsinok0714/followers",
+                  "following_url": "https://api.github.com/users/kimsinok0714/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/kimsinok0714/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/kimsinok0714/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/kimsinok0714/subscriptions",
+                  "organizations_url": "https://api.github.com/users/kimsinok0714/orgs",
+                  "repos_url": "https://api.github.com/users/kimsinok0714/repos",
+                  "events_url": "https://api.github.com/users/kimsinok0714/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/kimsinok0714/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                },
+                {
+                  "login": "hyuni86",
+                  "id": 226660951,
+                  "node_id": "U_kgDODYKSVw",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/226660951?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/hyuni86",
+                  "html_url": "https://github.com/hyuni86",
+                  "followers_url": "https://api.github.com/users/hyuni86/followers",
+                  "following_url": "https://api.github.com/users/hyuni86/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/hyuni86/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/hyuni86/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/hyuni86/subscriptions",
+                  "organizations_url": "https://api.github.com/users/hyuni86/orgs",
+                  "repos_url": "https://api.github.com/users/hyuni86/repos",
+                  "events_url": "https://api.github.com/users/hyuni86/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/hyuni86/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                }
+              ],
+              "requested_teams": [],
+              "labels": [
+                {
+                  "id": 9081022405,
+                  "node_id": "LA_kwDOPa3as88AAAACHUVnxQ",
+                  "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels/enhancement",
+                  "name": "enhancement",
+                  "color": "a2eeef",
+                  "default": true,
+                  "description": "New feature or request"
+                }
+              ],
+              "milestone": null,
+              "draft": false,
+              "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/commits",
+              "review_comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/comments",
+              "review_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/comments{/number}",
+              "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26/comments",
+              "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/da2107e63fcc94675784ed10d1db5ddfe8a51f02",
+              "head": {
+                "label": "AnByoungHyun:enhancement-25",
+                "ref": "enhancement-25",
+                "sha": "da2107e63fcc94675784ed10d1db5ddfe8a51f02",
+                "user": {
+                  "login": "AnByoungHyun",
+                  "id": 12080248,
+                  "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/AnByoungHyun",
+                  "html_url": "https://github.com/AnByoungHyun",
+                  "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                  "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                  "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                  "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                  "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                },
+                "repo": {
+                  "id": 1034803891,
+                  "node_id": "R_kgDOPa3asw",
+                  "name": "n8n-workflow",
+                  "full_name": "AnByoungHyun/n8n-workflow",
+                  "private": false,
+                  "owner": {
+                    "login": "AnByoungHyun",
+                    "id": 12080248,
+                    "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                    "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/AnByoungHyun",
+                    "html_url": "https://github.com/AnByoungHyun",
+                    "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                    "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                    "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                    "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                    "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                    "type": "User",
+                    "user_view_type": "public",
+                    "site_admin": false
+                  },
+                  "html_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                  "description": "n8n workflow sample repo",
+                  "fork": false,
+                  "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow",
+                  "forks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/forks",
+                  "keys_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/keys{/key_id}",
+                  "collaborators_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/collaborators{/collaborator}",
+                  "teams_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/teams",
+                  "hooks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/hooks",
+                  "issue_events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/events{/number}",
+                  "events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/events",
+                  "assignees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/assignees{/user}",
+                  "branches_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/branches{/branch}",
+                  "tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/tags",
+                  "blobs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/blobs{/sha}",
+                  "git_tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/tags{/sha}",
+                  "git_refs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/refs{/sha}",
+                  "trees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/trees{/sha}",
+                  "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/{sha}",
+                  "languages_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/languages",
+                  "stargazers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/stargazers",
+                  "contributors_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contributors",
+                  "subscribers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscribers",
+                  "subscription_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscription",
+                  "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/commits{/sha}",
+                  "git_commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/commits{/sha}",
+                  "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/comments{/number}",
+                  "issue_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/comments{/number}",
+                  "contents_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contents/{+path}",
+                  "compare_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/compare/{base}...{head}",
+                  "merges_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/merges",
+                  "archive_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/{archive_format}{/ref}",
+                  "downloads_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/downloads",
+                  "issues_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues{/number}",
+                  "pulls_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls{/number}",
+                  "milestones_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/milestones{/number}",
+                  "notifications_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/notifications{?since,all,participating}",
+                  "labels_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels{/name}",
+                  "releases_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/releases{/id}",
+                  "deployments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/deployments",
+                  "created_at": "2025-08-09T02:49:59Z",
+                  "updated_at": "2025-09-05T11:29:27Z",
+                  "pushed_at": "2025-09-07T04:53:59Z",
+                  "git_url": "git://github.com/AnByoungHyun/n8n-workflow.git",
+                  "ssh_url": "git@github.com:AnByoungHyun/n8n-workflow.git",
+                  "clone_url": "https://github.com/AnByoungHyun/n8n-workflow.git",
+                  "svn_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                  "homepage": null,
+                  "size": 42,
+                  "stargazers_count": 0,
+                  "watchers_count": 0,
+                  "language": "Python",
+                  "has_issues": true,
+                  "has_projects": true,
+                  "has_downloads": true,
+                  "has_wiki": true,
+                  "has_pages": false,
+                  "has_discussions": false,
+                  "forks_count": 0,
+                  "mirror_url": null,
+                  "archived": false,
+                  "disabled": false,
+                  "open_issues_count": 10,
+                  "license": null,
+                  "allow_forking": true,
+                  "is_template": false,
+                  "web_commit_signoff_required": false,
+                  "topics": [],
+                  "visibility": "public",
+                  "forks": 0,
+                  "open_issues": 10,
+                  "watchers": 0,
+                  "default_branch": "main",
+                  "allow_squash_merge": true,
+                  "allow_merge_commit": true,
+                  "allow_rebase_merge": true,
+                  "allow_auto_merge": false,
+                  "delete_branch_on_merge": false,
+                  "allow_update_branch": false,
+                  "use_squash_pr_title_as_default": false,
+                  "squash_merge_commit_message": "COMMIT_MESSAGES",
+                  "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+                  "merge_commit_message": "PR_TITLE",
+                  "merge_commit_title": "MERGE_MESSAGE"
+                }
+              },
+              "base": {
+                "label": "AnByoungHyun:main",
+                "ref": "main",
+                "sha": "c93f1d79e2e37ea99feb82df106ba2e7de861b1a",
+                "user": {
+                  "login": "AnByoungHyun",
+                  "id": 12080248,
+                  "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                  "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                  "gravatar_id": "",
+                  "url": "https://api.github.com/users/AnByoungHyun",
+                  "html_url": "https://github.com/AnByoungHyun",
+                  "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                  "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                  "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                  "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                  "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                  "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                  "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                  "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                  "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                  "type": "User",
+                  "user_view_type": "public",
+                  "site_admin": false
+                },
+                "repo": {
+                  "id": 1034803891,
+                  "node_id": "R_kgDOPa3asw",
+                  "name": "n8n-workflow",
+                  "full_name": "AnByoungHyun/n8n-workflow",
+                  "private": false,
+                  "owner": {
+                    "login": "AnByoungHyun",
+                    "id": 12080248,
+                    "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                    "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/AnByoungHyun",
+                    "html_url": "https://github.com/AnByoungHyun",
+                    "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                    "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                    "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                    "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                    "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                    "type": "User",
+                    "user_view_type": "public",
+                    "site_admin": false
+                  },
+                  "html_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                  "description": "n8n workflow sample repo",
+                  "fork": false,
+                  "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow",
+                  "forks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/forks",
+                  "keys_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/keys{/key_id}",
+                  "collaborators_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/collaborators{/collaborator}",
+                  "teams_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/teams",
+                  "hooks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/hooks",
+                  "issue_events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/events{/number}",
+                  "events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/events",
+                  "assignees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/assignees{/user}",
+                  "branches_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/branches{/branch}",
+                  "tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/tags",
+                  "blobs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/blobs{/sha}",
+                  "git_tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/tags{/sha}",
+                  "git_refs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/refs{/sha}",
+                  "trees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/trees{/sha}",
+                  "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/{sha}",
+                  "languages_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/languages",
+                  "stargazers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/stargazers",
+                  "contributors_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contributors",
+                  "subscribers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscribers",
+                  "subscription_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscription",
+                  "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/commits{/sha}",
+                  "git_commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/commits{/sha}",
+                  "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/comments{/number}",
+                  "issue_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/comments{/number}",
+                  "contents_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contents/{+path}",
+                  "compare_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/compare/{base}...{head}",
+                  "merges_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/merges",
+                  "archive_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/{archive_format}{/ref}",
+                  "downloads_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/downloads",
+                  "issues_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues{/number}",
+                  "pulls_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls{/number}",
+                  "milestones_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/milestones{/number}",
+                  "notifications_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/notifications{?since,all,participating}",
+                  "labels_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels{/name}",
+                  "releases_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/releases{/id}",
+                  "deployments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/deployments",
+                  "created_at": "2025-08-09T02:49:59Z",
+                  "updated_at": "2025-09-05T11:29:27Z",
+                  "pushed_at": "2025-09-07T04:53:59Z",
+                  "git_url": "git://github.com/AnByoungHyun/n8n-workflow.git",
+                  "ssh_url": "git@github.com:AnByoungHyun/n8n-workflow.git",
+                  "clone_url": "https://github.com/AnByoungHyun/n8n-workflow.git",
+                  "svn_url": "https://github.com/AnByoungHyun/n8n-workflow",
+                  "homepage": null,
+                  "size": 42,
+                  "stargazers_count": 0,
+                  "watchers_count": 0,
+                  "language": "Python",
+                  "has_issues": true,
+                  "has_projects": true,
+                  "has_downloads": true,
+                  "has_wiki": true,
+                  "has_pages": false,
+                  "has_discussions": false,
+                  "forks_count": 0,
+                  "mirror_url": null,
+                  "archived": false,
+                  "disabled": false,
+                  "open_issues_count": 10,
+                  "license": null,
+                  "allow_forking": true,
+                  "is_template": false,
+                  "web_commit_signoff_required": false,
+                  "topics": [],
+                  "visibility": "public",
+                  "forks": 0,
+                  "open_issues": 10,
+                  "watchers": 0,
+                  "default_branch": "main",
+                  "allow_squash_merge": true,
+                  "allow_merge_commit": true,
+                  "allow_rebase_merge": true,
+                  "allow_auto_merge": false,
+                  "delete_branch_on_merge": false,
+                  "allow_update_branch": false,
+                  "use_squash_pr_title_as_default": false,
+                  "squash_merge_commit_message": "COMMIT_MESSAGES",
+                  "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+                  "merge_commit_message": "PR_TITLE",
+                  "merge_commit_title": "MERGE_MESSAGE"
+                }
+              },
+              "_links": {
+                "self": {
+                  "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26"
+                },
+                "html": {
+                  "href": "https://github.com/AnByoungHyun/n8n-workflow/pull/26"
+                },
+                "issue": {
+                  "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26"
+                },
+                "comments": {
+                  "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/26/comments"
+                },
+                "review_comments": {
+                  "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/comments"
+                },
+                "review_comment": {
+                  "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/comments{/number}"
+                },
+                "commits": {
+                  "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls/26/commits"
+                },
+                "statuses": {
+                  "href": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/da2107e63fcc94675784ed10d1db5ddfe8a51f02"
+                }
+              },
+              "author_association": "OWNER",
+              "auto_merge": null,
+              "active_lock_reason": null,
+              "merged": false,
+              "mergeable": null,
+              "rebaseable": null,
+              "mergeable_state": "unknown",
+              "merged_by": null,
+              "comments": 4,
+              "review_comments": 0,
+              "maintainer_can_modify": false,
+              "commits": 1,
+              "additions": 359,
+              "deletions": 8,
+              "changed_files": 13
+            },
+            "repository": {
+              "id": 1034803891,
+              "node_id": "R_kgDOPa3asw",
+              "name": "n8n-workflow",
+              "full_name": "AnByoungHyun/n8n-workflow",
+              "private": false,
+              "owner": {
+                "login": "AnByoungHyun",
+                "id": 12080248,
+                "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+                "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+                "gravatar_id": "",
+                "url": "https://api.github.com/users/AnByoungHyun",
+                "html_url": "https://github.com/AnByoungHyun",
+                "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+                "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+                "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+                "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+                "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+                "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+                "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+                "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+                "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+                "type": "User",
+                "user_view_type": "public",
+                "site_admin": false
+              },
+              "html_url": "https://github.com/AnByoungHyun/n8n-workflow",
+              "description": "n8n workflow sample repo",
+              "fork": false,
+              "url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow",
+              "forks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/forks",
+              "keys_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/keys{/key_id}",
+              "collaborators_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/collaborators{/collaborator}",
+              "teams_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/teams",
+              "hooks_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/hooks",
+              "issue_events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/events{/number}",
+              "events_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/events",
+              "assignees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/assignees{/user}",
+              "branches_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/branches{/branch}",
+              "tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/tags",
+              "blobs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/blobs{/sha}",
+              "git_tags_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/tags{/sha}",
+              "git_refs_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/refs{/sha}",
+              "trees_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/trees{/sha}",
+              "statuses_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/statuses/{sha}",
+              "languages_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/languages",
+              "stargazers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/stargazers",
+              "contributors_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contributors",
+              "subscribers_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscribers",
+              "subscription_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/subscription",
+              "commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/commits{/sha}",
+              "git_commits_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/git/commits{/sha}",
+              "comments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/comments{/number}",
+              "issue_comment_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues/comments{/number}",
+              "contents_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/contents/{+path}",
+              "compare_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/compare/{base}...{head}",
+              "merges_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/merges",
+              "archive_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/{archive_format}{/ref}",
+              "downloads_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/downloads",
+              "issues_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/issues{/number}",
+              "pulls_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/pulls{/number}",
+              "milestones_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/milestones{/number}",
+              "notifications_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/notifications{?since,all,participating}",
+              "labels_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/labels{/name}",
+              "releases_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/releases{/id}",
+              "deployments_url": "https://api.github.com/repos/AnByoungHyun/n8n-workflow/deployments",
+              "created_at": "2025-08-09T02:49:59Z",
+              "updated_at": "2025-09-05T11:29:27Z",
+              "pushed_at": "2025-09-07T04:53:59Z",
+              "git_url": "git://github.com/AnByoungHyun/n8n-workflow.git",
+              "ssh_url": "git@github.com:AnByoungHyun/n8n-workflow.git",
+              "clone_url": "https://github.com/AnByoungHyun/n8n-workflow.git",
+              "svn_url": "https://github.com/AnByoungHyun/n8n-workflow",
+              "homepage": null,
+              "size": 42,
+              "stargazers_count": 0,
+              "watchers_count": 0,
+              "language": "Python",
+              "has_issues": true,
+              "has_projects": true,
+              "has_downloads": true,
+              "has_wiki": true,
+              "has_pages": false,
+              "has_discussions": false,
+              "forks_count": 0,
+              "mirror_url": null,
+              "archived": false,
+              "disabled": false,
+              "open_issues_count": 10,
+              "license": null,
+              "allow_forking": true,
+              "is_template": false,
+              "web_commit_signoff_required": false,
+              "topics": [],
+              "visibility": "public",
+              "forks": 0,
+              "open_issues": 10,
+              "watchers": 0,
+              "default_branch": "main"
+            },
+            "sender": {
+              "login": "AnByoungHyun",
+              "id": 12080248,
+              "node_id": "MDQ6VXNlcjEyMDgwMjQ4",
+              "avatar_url": "https://avatars.githubusercontent.com/u/12080248?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/AnByoungHyun",
+              "html_url": "https://github.com/AnByoungHyun",
+              "followers_url": "https://api.github.com/users/AnByoungHyun/followers",
+              "following_url": "https://api.github.com/users/AnByoungHyun/following{/other_user}",
+              "gists_url": "https://api.github.com/users/AnByoungHyun/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/AnByoungHyun/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/AnByoungHyun/subscriptions",
+              "organizations_url": "https://api.github.com/users/AnByoungHyun/orgs",
+              "repos_url": "https://api.github.com/users/AnByoungHyun/repos",
+              "events_url": "https://api.github.com/users/AnByoungHyun/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/AnByoungHyun/received_events",
+              "type": "User",
+              "user_view_type": "public",
+              "site_admin": false
+            }
+          },
+          "headers": {
+            "host": "cbd914bcd557.ngrok-free.app",
+            "user-agent": "GitHub-Hookshot/bebe1c7",
+            "content-length": "29746",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-forwarded-for": "140.82.115.41",
+            "x-forwarded-host": "cbd914bcd557.ngrok-free.app",
+            "x-forwarded-proto": "https",
+            "x-github-delivery": "af8744d0-8bb3-11f0-9e2b-5a31b8a4c218",
+            "x-github-event": "pull_request",
+            "x-github-hook-id": "568268959",
+            "x-github-hook-installation-target-id": "1034803891",
+            "x-github-hook-installation-target-type": "repository",
+            "accept-encoding": "gzip"
+          },
+          "query": {}
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Github Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit assignees and Lables": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add comment to Pull Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add reviewers": {
+      "ai_tool": [
+        [
+          {
+            "node": "Auto reviewer github pull request",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Code Reviewer AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a review in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "Code Reviewer AI",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Code Diff": {
+      "ai_tool": [
+        [
+          {
+            "node": "Code Reviewer AI",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto reviewer github pull request": {
+      "main": [
+        [
+          {
+            "node": "Code Style Review Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code Secure Review Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code Optimization Review Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto assign and label github pull request": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Code Reviewer AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AWS Bedrock Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Auto reviewer github pull request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b64d2694-5294-4e12-829b-2d40c894e8a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48ffb208fd4d58e0c69e277bcea416f40eb58d8d44cb3f6eca1ded9becce184e"
+  },
+  "id": "ygLDBpt5Jbr9RBSl",
+  "tags": []
+}

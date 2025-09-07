@@ -1,0 +1,566 @@
+{
+  "name": "Github Issue Processing Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "AnByoungHyun",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/AnByoungHyun/n8n-workflow"
+        },
+        "events": [
+          "issues"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        672,
+        112
+      ],
+      "id": "ae6535f9-865a-42a9-bf3d-58c32e2385dd",
+      "name": "Github Trigger",
+      "webhookId": "2d677402-ad14-47c4-85e7-1803080d8627",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ ['opened', 'reopened'] }}",
+                    "rightValue": "={{ $json.body.action }}",
+                    "operator": {
+                      "type": "array",
+                      "operation": "contains",
+                      "rightType": "any"
+                    },
+                    "id": "0742cd7e-ab48-4c55-bf22-82734b733f4e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "opened"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c8981ced-e0ab-4260-b22c-f1f2e3390461",
+                    "leftValue": "={{ ['labeled'] }}",
+                    "rightValue": "={{ $json.body.action }}",
+                    "operator": {
+                      "type": "array",
+                      "operation": "contains",
+                      "rightType": "any"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "labeled"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "821bce7d-c42b-4695-ab34-1d34304f547d",
+                    "leftValue": "={{ ['edited', 'deleted', 'transferred', 'pinned', 'unpinned', 'closed', 'assigned', 'unassigned', 'labeled', 'unlabeled', 'milestoned', 'demilestoned', 'locked', 'unlocked', 'typed', 'untyped'] }}",
+                    "rightValue": "={{ $json.body.action }}",
+                    "operator": {
+                      "type": "array",
+                      "operation": "contains",
+                      "rightType": "any"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "nothing"
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        912,
+        96
+      ],
+      "id": "4811765b-50a1-4343-9376-25ab672821b9",
+      "name": "Switch",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        240
+      ],
+      "id": "ae46ad48-4cf2-4a32-b674-ce30fb486a84",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.owner.login }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.name }}",
+          "mode": "name"
+        },
+        "issueNumber": "={{ $json.body.issue.number }}",
+        "editFields": {
+          "labels": [
+            {
+              "label": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('labels0_Label', `선택한 라벨을 문자열 리스트로 작성하여 등롭 합니다.`, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        1504,
+        -80
+      ],
+      "id": "69fcadbc-3579-43c7-b688-fb552c75251c",
+      "name": "Add label to issue",
+      "webhookId": "82357e83-e327-4ddd-92f5-bb1128ba7d61",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.owner.login }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.name }}",
+          "mode": "name"
+        },
+        "issueNumber": "={{ $json.body.issue.number }}",
+        "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Body', `라벨을 선택한 이유에 대해 코멘트를 작성 합니다.`, 'string') }}"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        1664,
+        -80
+      ],
+      "id": "f51680dd-a7c1-4b5d-a7b4-2c24bae060d2",
+      "name": "Add comment to issue",
+      "webhookId": "18d72f72-e644-46f8-b4e3-f9029ba3b8a9",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.owner.login }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.name }}",
+          "mode": "name"
+        },
+        "issueNumber": "={{ $json.body.issue.number }}",
+        "editFields": {
+          "assignees": [
+            {
+              "assignee": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('assignees0_Assignees', ``, 'string') }}"
+            }
+          ],
+          "labels": [
+            {
+              "label": "={{ $('Github Trigger').item.json.body.issue.labels.map(item => item.name).join(', ') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        320
+      ],
+      "id": "0fe17c7f-64af-40e8-a93c-f07e67e31164",
+      "name": "Add assignees to issue",
+      "webhookId": "82357e83-e327-4ddd-92f5-bb1128ba7d61",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "# Role & Goal\n당신은 Github 이슈 관리 전문가 AI 어시스턴트입니다. 당신의 주요 임무는 새로 생성된 Github 이슈의 제목과 본문을 분석하여, 가장 적합한 라벨로 분류하고 지정된 **반드시 주어진 도구를 사용하여 임무를 완수해야 합니다.**\n\n# Workflow\n1.  **이슈 분석**: 사용자가 전달한 이슈의 제목과 본문 내용을 주의 깊게 읽고 핵심 내용을 파악합니다. 사용자의 의도가 무엇인지(버그 보고, 기능 요청, 질문 등)를 중점적으로 분석하세요.\n2.  **라벨 결정**: 아래의 \"Labeling Guideline\"을 바탕으로, 분석한 내용에 가장 적합한 라벨을 단 하나만 선택합니다.\n3.  **선택 이유 작성**: 왜 해당 라벨을 선택했는지에 대한 명확하고 간결한 이유를 5문장 이하의  한글로 작성합니다. 이 이유는 나중에 Github 코멘트로 사용자에게 보여질 내용입니다.\n4.  **도구 실행**:\n    4-1. `Add label to issue` 도구를 호출하여 결정한 라벨을 이슈에 추가하세요.\n    4-2. `Add comment to issue` 도구를 호출하여 아래 템플릿에 맞춰 분류 이유를 설명하는 코멘트를 등록하세요.\n\n\n# Labeling Guideline\n\n아래 설명을 참고하여 가장 적절한 라벨을 신중하게 선택하세요.\n\n### `bug`\n- **설명**: 프로그램이 의도한 대로 작동하지 않는 문제에 사용합니다. (예: 오류, 크래시, 잘못된 결과, 비정상적인 동작)\n- **핵심 키워드**: `error`, `failed`, `broken`, `crash`, `issue`, `problem`, `not working`\n- **예시**:\n    - (제목) \"로그인 버튼을 클릭하면 500 에러가 발생합니다.\"\n    - (본문) \"특정 조건에서 데이터 조회가 누락되는 것 같습니다.\"\n\n### `enhancement`\n- **설명**: 기존 기능의 개선이나 새로운 기능을 요청할 때 사용합니다.\n- **핵심 키워드**: `add`, `implement`, `support`, `improve`, `feature request`\n- **예시**:\n    - (제목) \"CSV 파일 내보내기 기능 추가 요청\"\n    - (본문) \"현재 검색 기능에 필터를 더 추가해주시면 좋겠습니다.\"\n\n### `documentation`\n- **설명**: 문서(README, API 명세, 가이드 등)의 수정, 추가, 보완이 필요할 때 사용합니다.\n- **핵심 키워드**: `docs`, `readme`, `example`, `document`, `typo`\n- **예시**:\n    - (제목) \"설치 가이드에 오타가 있습니다.\"\n    - (본문) \"API 사용법 예제 코드를 추가해주세요.\"\n\n### `question`\n- **설명**: 기능, 사용법, 구현 방식 등에 대한 질문에 사용합니다.\n- **핵심 키워드**: `how to`, `is it possible`, `what is`, `question`\n- **예시**:\n    - (제목) \"이 라이브러리를 A 환경에서 사용할 수 있나요?\"\n    - (본문) \"X 기능을 구현하려면 어떤 파라미터를 사용해야 하나요?\"\n\n# Output Format\n반드시 아래와 같은 JSON 구조로 응답해야 합니다.\n\n```json\n{\n  \"label\": \"선택된 라벨\",\n  \"reason\": \"해당 라벨을 선택한 이유\"\n}\n```",
+              "role": "system"
+            },
+            {
+              "content": "=# 분석할 이슈\n\n## 제목\n{{ $json.body.issue.title }}\n\n## 본문\n{{ $json.body.issue.body }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1440,
+        -256
+      ],
+      "id": "646552c4-fef8-4d09-82b1-636eb0d45fff",
+      "name": "Label Classify",
+      "credentials": {
+        "openAiApi": {
+          "id": "ih0gZ127MpP7A6I9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "# Role & Goal\n당신은 Github 이슈의 담당자를 할당하는 전문가 AI 어시턴트입니다. 당신의 목표는 주어진 이슈의 **라벨, 제목, 본문**을 종합적으로 분석하여, \"담당자 매칭 규칙\"에 따라 가장 적합한 담당자 **한 명**을 지정하고, 해당 담당자를 위해 Github에 등록할 **코멘트를 생성**하여 남기는 것입니다. **반드시 주어진 도구를 사용하여 임무를 완수해야 합니다.**\n\n# Workflow\n1.  **입력 분석**: 전달받은 이슈의 `라벨`, `제목`, `본문`을 확인하여 핵심 내용을 파악합니다.\n2.  **담당자 매칭**: 아래 \"Assignee Matching Rules\"을 최우선으로 적용하여 `라벨`에 해당하는 담당자를 결정합니다.\n3.  **코멘트 생성**: 담당자가 이슈를 즉시 파악하고 작업을 시작할 수 있도록, 아래 \"Comment Template\"에 맞춰 Github 코멘트 전체 내용을 작성합니다. 코멘트에는 담당자 호출(`@아이디`)과 이슈 요약이 반드시 포함되어야 합니다.\n4.  **도구 실행**: 아래 순서에 따라 도구를 실행하여 임무를 완수합니다.\n    4-1. `Add assignees to issue` 도구를 호출하여 2단계에서 결정한 담당자를 이슈에 할당합니다.\n    4-2. `Get github ref` 도구를 호출한 결과의 응답 메시지 중 \"sha\" 를 가져옵니다.\n    4-3. `Create github branch` 도구를 호출하여 담당자가 사용할 브랜치를 생성 합니다. 브랜치를 생성할 때 4-2. 에서 가져온 \"sha\" 가 필요합니다.\n    4-2. \"Comment Template\"에 따라 코멘트를 작성하여 `Add comment to issue1` 도구를 호출하고 이슈에 코멘트를 등록합니다.\n\n\n# Assignee Matching Rules\n\n각 라벨에 따라 아래와 같이 담당자를 할당하세요.\n\n| 라벨 (Label) | 담당자 (Assignee) | 담당 업무 |\n| :--- | :--- | :--- |\n| `bug` | **AnByoungHyun** | 오류, 크래시 등 소프트웨어 결함 처리 |\n| `enhancement` | **AnByoungHyun** | 새로운 기능 추가 및 구현 |\n| `documentation`| **hyuni86** | 문서의 수정, 추가 및 관리 |\n| `question` | **hyuni86** | 기능 및 사용법 관련 질문 응대 |\n| `improvement` | **kimsinok0714** | 기존 기능의 성능 및 사용성 개선 |\n\n**※ 예외 처리 규칙:**\n만약 위 규칙에 명시되지 않은 라벨이거나, 담당자를 특정하기 어려운 경우에는 기본 담당자인 **`AnByoungHyun`** 을 배정합니다.\n\n\n# Comment Template\n\n이 템플릿을 사용하여 담당자에게 보낼 Github 코멘트를 작성하세요.\n\n```markdown\n🤖 AI가 담당자를 배정했습니다.\n\n안녕하세요, @{assignees} 님!\n\n`{label}` 라벨이 지정된 이 이슈에 대한 전문가로 판단되어 담당자로 배정되었습니다.\n\n**이슈 요약:**\n{issue_summary}\n\n**브랜치**\n{branch_name}\n\n내용을 검토하신 후 작업을 진행해 주시기 바랍니다.\n```\n\n# Output Format\n\n반드시 아래와 같은 JSON 구조로 응답해야 합니다. `assignees` 필드에는 **담당자의 Github 아이디**를 정확히 기입합니다.\n\n```json\n{\n  \"assignees\": \"담당자 아이디\",\n  \"message\": \"Comment Template 메시지\",\n  \"branch\": \"생성한 브랜치\"\n}\n```",
+              "role": "system"
+            },
+            {
+              "content": "=# 분석할 이슈\n\n## 제목\n{{ $json.body.issue.title }}\n\n## 본문\n{{ $json.body.issue.body }}\n\n## 라벨\n{{ $json.body.issue.labels.map(lbs => lbs.name).join(',') }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1440,
+        112
+      ],
+      "id": "b9270a20-2d4d-4bad-bac7-a8decef4c491",
+      "name": "Task Assignees",
+      "credentials": {
+        "openAiApi": {
+          "id": "ih0gZ127MpP7A6I9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createComment",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.owner.login }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.body.repository.name }}",
+          "mode": "name"
+        },
+        "issueNumber": "={{ $json.body.issue.number }}",
+        "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Body', `담당자를 배정한 내용과 이슈를 요역한 메시지를 작성합니다.`, 'string') }}"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        320
+      ],
+      "id": "fdc70b25-5a01-40d1-b38f-482339e902bc",
+      "name": "Add comment to issue1",
+      "webhookId": "18d72f72-e644-46f8-b4e3-f9029ba3b8a9",
+      "credentials": {
+        "githubApi": {
+          "id": "WnwU6wTFlRxq8uhl",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "작업이 할당된 작업자가 작업할 수 있도록 미리 브랜치를 생성해 둡니다.\n\n새로 생성할 브랜치 이름은 \"ref\" 에 작성하며 \"refs/heads/라벨명-이슈번호\" 형식의 이름으로 생성합니다.\n새로 생성할 브랜치가 참조할 브랜치는 \"sha\" 에 작성하며, \"Get github ref\" 결과의 \"sha\" 데이터를 사용합니다.",
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{ $json.body.repository.owner.login }}/{{ $json.body.repository.name }}/git/refs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/vnd.github+json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `ref/heads/브랜치명`, 'string') }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1888,
+        320
+      ],
+      "id": "686218cb-072c-4b3d-9803-8e1e53faadba",
+      "name": "Create github branch",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "f0sm0cFb6Squs2Za",
+          "name": "Github Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "브랜치를 생성하기 위해 참조할 브랜치의 sha 값을 가져 옵니다.",
+        "url": "=https://api.github.com/repos/{{ $json.body.repository.owner.login }}/{{ $json.body.repository.name }}/git/ref/heads/main",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/vnd.github+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1728,
+        320
+      ],
+      "id": "e1addae8-fd11-4d40-b739-7c5b5473bed5",
+      "name": "Get github ref",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "f0sm0cFb6Squs2Za",
+          "name": "Github Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Github Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Label Classify",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Task Assignees",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to issue": {
+      "ai_tool": [
+        [
+          {
+            "node": "Label Classify",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add comment to issue": {
+      "ai_tool": [
+        [
+          {
+            "node": "Label Classify",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add assignees to issue": {
+      "ai_tool": [
+        [
+          {
+            "node": "Task Assignees",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Task Assignees": {
+      "main": [
+        []
+      ]
+    },
+    "Add comment to issue1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Task Assignees",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create github branch": {
+      "ai_tool": [
+        [
+          {
+            "node": "Task Assignees",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get github ref": {
+      "ai_tool": [
+        [
+          {
+            "node": "Task Assignees",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "89edfcaf-33ff-4f76-84c0-5cc7917a64ac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48ffb208fd4d58e0c69e277bcea416f40eb58d8d44cb3f6eca1ded9becce184e"
+  },
+  "id": "684Mxx2oY9IoJFTp",
+  "tags": []
+}
